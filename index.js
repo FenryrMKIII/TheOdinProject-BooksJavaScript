@@ -1,21 +1,20 @@
-function Book (title, author, pages, read) {
+function Book(title, author, pages, read) {
     this.title = title;
     this.author = author;
     this.pages = pages;
     this.read = read;
 
-    this.info = function(){
+    this.info = function () {
         var read_message;
         var message;
 
         if (this.read) {
             read_message = 'already read'
-        }
-        else {
+        } else {
             read_message = 'not read yet'
         }
 
-        message = this.title + " by " + this.author +", " + this.pages + " pages, " + read_message
+        message = this.title + " by " + this.author + ", " + this.pages + " pages, " + read_message
         return message
     }
 }
@@ -42,7 +41,7 @@ function createBook(book) {
     bookAuthor.innerText = book.author;
     const bookPages = document.createElement("span");
     bookPages.className = 'bookPages';
-    bookPages.innerText = book.Pages;
+    bookPages.innerText = book.pages;
     const bookReadStatus = document.createElement("span");
     bookReadStatus.className = 'bookReadStatus';
     bookReadStatus.innerText = book.read;
@@ -55,7 +54,7 @@ function createBook(book) {
     return bookDiv
 }
 
-function createBooksDisplay(library){
+function addBookToDisplay(library) {
     const bookDisplay = document.getElementById('book-display');
     library.forEach((book) => {
             bookDiv = createBook(book);
@@ -73,14 +72,37 @@ kingReturn = new Book("The return of the King", "J.R.R. Tolkien", 425, false);
 
 
 library = [];
-
-
-
 addBook(library, [theHobbit, endymion, hyperion, communtyRing, twoTowers, kingReturn]);
+addBookToDisplay(library);
 
+// modal
+const dialog = document.getElementById("add-book-dialog");
+const showButton = document.getElementById("show-book-dialog-button");
+const closeButton = document.getElementById("close-book-dialog-button");
 
+showButton.addEventListener("click", () => {
+    dialog.showModal();
+});
 
-createBooksDisplay(library);
+closeButton.addEventListener("click", (event) => {
+    event.preventDefault(); // Prevent the form from submitting
+    dialog.close();
+});
 
-console.log(theHobbit.info());
-console.log(library);
+// Handle the form
+const form = document.getElementById('add-book-form');
+form.addEventListener('submit', function (event) {
+    let bookReadStatus = document.getElementById('book-read-status').checked;
+    let book = new Book(form.elements["book-title"].value, form.elements["book-author"].value
+            ,
+            form.elements["book-pages"].value
+            ,
+            bookReadStatus
+        )
+    ;
+    addBook(library, [book]);
+    addBookToDisplay([book]);
+
+    event.preventDefault(); // prevent form from submitting. This is to allow testing without a server
+
+});
