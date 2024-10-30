@@ -3,6 +3,7 @@ function Book(title, author, pages, read) {
     this.author = author;
     this.pages = pages;
     this.read = read;
+    this.libraryPosition = undefined;
 
     this.info = function () {
         var read_message;
@@ -25,13 +26,19 @@ function Book(title, author, pages, read) {
  * @param {array} book
  */
 function addBook(library, books) {
-    books.forEach((book) =>
-        library.push(book));
+    books.forEach((book) => {
+            library.push(book);
+            book.libraryPosition = library.indexOf(book);
+        }
+    );
+
+
 }
 
 function createBook(book) {
     const bookDiv = document.createElement('div');
     bookDiv.className = 'book';
+    bookDiv.dataset.libraryPosition = book.libraryPosition;
 
     const bookTitle = document.createElement("span");
     bookTitle.className = 'bookTitle';
@@ -46,22 +53,34 @@ function createBook(book) {
     bookReadStatus.className = 'bookReadStatus';
     bookReadStatus.innerText = book.read;
 
+    const delBookButton = document.createElement("button");
+    delBookButton.classList.add('delBookButton');
+    delBookButton.innerText = 'Delete';
+
     bookDiv.appendChild(bookTitle);
     bookDiv.appendChild(bookAuthor);
     bookDiv.appendChild(bookPages);
     bookDiv.appendChild(bookReadStatus);
+    bookDiv.appendChild(delBookButton);
 
     return bookDiv
 }
 
-function addBookToDisplay(library) {
+function addBookToDisplay(bookList) {
     const bookDisplay = document.getElementById('book-display');
-    library.forEach((book) => {
-            bookDiv = createBook(book);
+    bookList.forEach((book) => {
+            let bookDiv = createBook(book);
             bookDisplay.appendChild(bookDiv);
         }
     )
 }
+
+function removeBookFromDisplay(bookDiv) {
+    const libraryPosition = `[data-library-position="${bookDiv.dataset.libraryPosition}"]`;
+    const bookToDelete = document.querySelector(libraryPosition);
+    bookToDelete.remove()
+}
+
 
 theHobbit = new Book("The Hobbit", "J.R.R. Tolkien", 295, false);
 endymion = new Book("Endymion", "Dan Simmons", 100, false);
@@ -74,6 +93,15 @@ kingReturn = new Book("The return of the King", "J.R.R. Tolkien", 425, false);
 library = [];
 addBook(library, [theHobbit, endymion, hyperion, communtyRing, twoTowers, kingReturn]);
 addBookToDisplay(library);
+
+document.querySelectorAll('.delBookButton').forEach((item, index) => {
+    item.addEventListener('click', function (event) {
+        let libraryPosition = event.target.parentElement.dataset.libraryPosition
+        library.splice(libraryPosition,1)
+        removeBookFromDisplay(event.target.parentElement)
+
+    })});
+
 
 // modal
 const dialog = document.getElementById("add-book-dialog");
