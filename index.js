@@ -49,9 +49,20 @@ function createBook(book) {
     const bookPages = document.createElement("span");
     bookPages.className = 'bookPages';
     bookPages.innerText = book.pages;
-    const bookReadStatus = document.createElement("span");
+
+    const bookReadStatusSpan = document.createElement("span");
+    bookReadStatusSpan.className = 'bookReadStatusSpan';
+    const bookReadStatus = document.createElement("input");
     bookReadStatus.className = 'bookReadStatus';
-    bookReadStatus.innerText = book.read;
+    bookReadStatus.type = 'checkbox';
+    bookReadStatus.id = 'bookReadStatus' + book.libraryPosition;
+    bookReadStatus.checked = book.read;
+
+    const bookReadStatusLabel = document.createElement("label");
+    bookReadStatusLabel.forHtml = 'bookReadStatus' + book.libraryPosition;
+    bookReadStatusLabel.innerText = "Read?";
+    bookReadStatusSpan.appendChild(bookReadStatus);
+    bookReadStatusSpan.appendChild(bookReadStatusLabel)
 
     const delBookButton = document.createElement("button");
     delBookButton.classList.add('delBookButton');
@@ -60,7 +71,7 @@ function createBook(book) {
     bookDiv.appendChild(bookTitle);
     bookDiv.appendChild(bookAuthor);
     bookDiv.appendChild(bookPages);
-    bookDiv.appendChild(bookReadStatus);
+    bookDiv.appendChild(bookReadStatusSpan);
     bookDiv.appendChild(delBookButton);
 
     return bookDiv
@@ -82,12 +93,19 @@ function removeBookFromDisplay(bookDiv) {
 }
 
 
+function changeReadStatus(checkbox, bookDiv) {
+    const libraryPosition = bookDiv.dataset.libraryPosition
+    const book = library[libraryPosition];
+    book.read = checkbox.checked;
+    console.log(book.read)
+}
+
 theHobbit = new Book("The Hobbit", "J.R.R. Tolkien", 295, false);
-endymion = new Book("Endymion", "Dan Simmons", 100, false);
-hyperion = new Book("Hyperion", "Dan Simmons", 200, false);
+endymion = new Book("Endymion", "Dan Simmons", 100, true);
+hyperion = new Book("Hyperion", "Dan Simmons", 200, true);
 communtyRing = new Book("The community of the ring", "J.R.R. Tolkien", 50, false);
 twoTowers = new Book("The two towers", "J.R.R. Tolkien", 125, false);
-kingReturn = new Book("The return of the King", "J.R.R. Tolkien", 425, false);
+kingReturn = new Book("The return of the King", "J.R.R. Tolkien", 425, true);
 
 
 library = [];
@@ -100,6 +118,11 @@ document.querySelectorAll('.delBookButton').forEach((item, index) => {
         library.splice(libraryPosition,1)
         removeBookFromDisplay(event.target.parentElement)
 
+    })});
+
+document.querySelectorAll('.bookReadStatus').forEach((item, index) => {
+    item.addEventListener('click', function (event) {
+        changeReadStatus(item, event.target.parentElement.parentElement)
     })});
 
 
